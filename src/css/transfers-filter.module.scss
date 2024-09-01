@@ -1,0 +1,89 @@
+@import "./shared";
+@import "./loading-spinner.module";
+
+%ui-block {
+  background-color: #fff;
+  border-radius: 5px;
+  box-shadow: 0 0 4px -1px;
+  overflow: hidden;
+}
+
+aside {
+  position: sticky;
+  float: left;
+  top: $block-spacing-y;
+}
+
+.transfers-filter {
+  @extend %ui-block;
+  width: 220px;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+
+  h2 {
+    margin: 15px 0 10px;
+    padding-left: 1.5em;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: #4a4a4a;
+  }
+
+  label {
+    cursor: pointer;
+
+    &:hover input[type=checkbox] + div {
+      background-color: #f1fcff;
+    }
+
+    input[type="checkbox"] {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+
+      &:focus-visible + div {
+        outline: 1px solid #ccc;
+      }
+
+      & + div {
+        padding: 10px 0;
+        padding-left: 3.7em;
+        font-size: 13px;
+        color: #4a4a4a;
+      }
+
+      & + div::before {
+        content: "";
+        position: absolute;
+        margin-left: -2.2em;
+        width: 1.35em;
+        height: 1.35em;
+        box-shadow: 0 0 0 0.1em #9abbce;
+        border-radius: 2px;
+        background-color: #fff;
+        background-repeat: no-repeat;
+        background-position: 50%;
+      }
+
+      &:checked + div::before {
+        box-shadow: 0 0 0 0.1em #2196f3;
+        background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M4.28571 8L0 4.16123L1.20857 3.0787L4.28571 5.82726L10.7914 0L12 1.09021L4.28571 8Z' fill='%232196f3'/%3E%3C/svg%3E");
+      }
+    }
+  }
+}
+
+.preload-notification {
+  @extend %ui-block;
+  display: flex;
+  align-items: center;
+  width: 200px;
+  padding: 10px;
+
+  .loading-spinner {
+    @include spinner-template(35px);
+    margin-right: 10px;
+  }
+}

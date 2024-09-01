@@ -1,0 +1,71 @@
+@import "./shared";
+
+$btnFilter-edgeRadius: 6px;
+$btnFilter-borderStyle: 1px solid #dfe5ec;
+
+.price-filter {
+  margin: 0;
+  display: flex;
+  margin-bottom: $block-spacing-y;
+  padding: 0;
+  border: none;
+
+  input[type="radio"] {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+
+    & + div {
+      display: flex;
+      width: 100%;
+      margin: 0;
+      padding: 12px 18px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+      color: #4a4a4a;
+      text-transform: uppercase;
+      background: #fff;
+      border: $btnFilter-borderStyle;
+      border-left: none;
+      outline-offset: -1px;
+
+      span {
+        margin: 0 auto;
+        text-align: center;
+        align-self: center;
+      }
+    }
+
+    &:checked + div {
+      background-color: #2196f3;
+      color: #fff;
+    }
+
+    &:focus-visible + div {
+      outline: 1px solid #444;
+    }
+  }
+
+  label {
+    display: flex;
+    flex-grow: 1;
+
+    &:hover div {
+      background-color: #f1fcff;
+    }
+
+    &:first-child div {
+      border-left: $btnFilter-borderStyle;
+      border-top-left-radius: $btnFilter-edgeRadius;
+      border-bottom-left-radius: $btnFilter-edgeRadius;
+    }
+
+    &:last-child div {
+      border-top-right-radius: $btnFilter-edgeRadius;
+      border-bottom-right-radius: $btnFilter-edgeRadius;
+    }
+  }
+}

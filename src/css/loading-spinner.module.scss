@@ -1,0 +1,22 @@
+@keyframes loading {to{transform: rotate(1turn)}}
+
+@mixin spinner-template($size) {
+  margin: 0 auto;
+  width: $size;
+  padding: 8px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #385f91;
+  --_m: 
+    conic-gradient(#0000 10%,#000),
+    linear-gradient(#000 0 0) content-box;
+  -webkit-mask: var(--_m);
+          mask: var(--_m);
+  -webkit-mask-composite: source-out;
+          mask-composite: subtract;
+  animation: loading 1s infinite linear;
+}
+
+.loading-spinner {
+  @include spinner-template(50px);
+}
