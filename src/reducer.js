@@ -1,4 +1,7 @@
-import { createStore, bindActionCreators } from 'redux';
+import { createStore, applyMiddleware, bindActionCreators } from 'redux';
+import { thunk } from 'redux-thunk';
+
+import { fetchTickets, updateSearchID } from './api';
 
 const registeredHooks = new Set();
 
@@ -6,13 +9,8 @@ const actionsMap = new Map([
   [
     'TICKETS_UPDATE',
     (state, action) => {
-      return Object.assign({}, state, { tickets: action.payload });
-    },
-  ],
-  [
-    'TICKETS_APPEND',
-    (state, action) => {
       const tickets = [...state.tickets, ...action.payload];
+      delete state.error;
       return Object.assign({}, state, { tickets });
     },
   ],
@@ -44,19 +42,31 @@ const actionsMap = new Map([
   ],
 ]);
 
-const reducer = (state = { isFetching: true, transfersFilter: new Set([0, 1, 2]), sortOrder: 'cheapest' }, action) => {
+const reducer = (
+  state = { tickets: [], isFetching: true, transfersFilter: new Set([0, 1, 2]), sortOrder: 'cheapest' },
+  action
+) => {
   if (actionsMap.has(action.type)) return actionsMap.get(action.type)(state, action);
   return state;
 };
 
-export const store = createStore(reducer);
+export const store = createStore(reducer, applyMiddleware(thunk));
 
 export const actions = bindActionCreators(
   {
-    updateTickets: (payload) => ({ type: 'TICKETS_UPDATE', payload }),
-    appendTickets: (payload) => ({ type: 'TICKETS_APPEND', payload }),
-    fetchingFinished: () => ({ type: 'FETCH_TICKETS_FINISHED' }),
-    catchError: (info) => ({ type: 'ERROR_CATCH', info }),
+    recieveTickets: () => (dispatch, getState) => {
+      fetchTickets((responseData) => {
+        const { tickets } = getState();
+        if (!responseData.error) dispatch({ type: 'TICKETS_UPDATE', payload: responseData.tickets });
+        else if (!tickets.length) {
+          dispatch({ type: 'ERROR_CATCH', info: responseData.error });
+          return;
+        }
+        if (responseData.finished && !tickets.length) updateSearchID().then(() => actions.recieveTickets());
+        else if (!responseData.finished) actions.recieveTickets();
+        else dispatch({ type: 'FETCH_TICKETS_FINISHED' });
+      });
+    },
     applyTransfersFilter: (payload) => ({ type: 'FILTER_TRANSFERS_APPLY', payload }),
     setSortOrder: (sortOrder) => ({ type: 'SORT_ORDER_SET', sortOrder }),
   },

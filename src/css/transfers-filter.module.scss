@@ -1,5 +1,5 @@
-@import "./shared";
-@import "./loading-spinner.module";
+@import './shared';
+@import './loading-spinner.module';
 
 %ui-block {
   background-color: #fff;
@@ -32,11 +32,11 @@ aside {
   label {
     cursor: pointer;
 
-    &:hover input[type=checkbox] + div {
+    &:hover input[type='checkbox'] + div {
       background-color: #f1fcff;
     }
 
-    input[type="checkbox"] {
+    input[type='checkbox'] {
       position: absolute;
       width: 1px;
       height: 1px;
@@ -55,7 +55,7 @@ aside {
       }
 
       & + div::before {
-        content: "";
+        content: '';
         position: absolute;
         margin-left: -2.2em;
         width: 1.35em;

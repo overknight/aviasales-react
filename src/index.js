@@ -1,8 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 
-import { actions as storeActions } from './reducer';
-import { getTickets, loadNextPage } from './api';
+import { store, actions as storeActions, bindHook, unbindHook } from './reducer';
 import PriceFilter from './PriceFilter';
 import Tickets from './Tickets';
 import TransfersFilter from './TransfersFilter';
@@ -47,7 +46,7 @@ const showError = ({ message }) => {
         type="button"
         onClick={() => {
           root.render(<LoadingSpinner />);
-          getTickets(responseHandler);
+          storeActions.recieveTickets();
         }}
       >
         Повторить попытку
@@ -56,32 +55,28 @@ const showError = ({ message }) => {
   );
 };
 
-const responseHandler = (responseData) => {
-  if (!responseData.error) storeActions.updateTickets(responseData.tickets);
-  else {
-    storeActions.catchError(responseData.error);
-    showError(responseData.error);
-    return;
-  }
-  if (responseData.shouldLoadNextPage)
-    loadNextPage((responseData) => {
-      storeActions.appendTickets(responseData.tickets);
-      if (responseData.finished) storeActions.fetchingFinished();
-    });
-  root.render(
-    <>
-      <TransfersFilter />
-      <div className="ticket-list">
-        <PriceFilter />
-        <Tickets {...{ paginator }} />
-        <button ref={paginator.domRef} type="button" onClick={paginator.showMore} className="btn-paginator">
-          Показать еще 5 билетов!
-        </button>
-      </div>
-    </>
-  );
+const onInit = () => {
+  const { error, tickets } = store.getState();
+  if (!error) {
+    if (!tickets.length) return;
+    unbindHook(onInit);
+    root.render(
+      <>
+        <TransfersFilter />
+        <div className="ticket-list">
+          <PriceFilter />
+          <Tickets {...{ paginator }} />
+          <button ref={paginator.domRef} type="button" onClick={paginator.showMore} className="btn-paginator">
+            Показать еще 5 билетов!
+          </button>
+        </div>
+      </>
+    );
+  } else showError(error);
 };
 
-getTickets(responseHandler);
+bindHook(onInit);
+
+storeActions.recieveTickets();
 
 root.render(<LoadingSpinner />);

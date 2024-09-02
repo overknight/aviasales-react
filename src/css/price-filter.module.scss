@@ -1,4 +1,4 @@
-@import "./shared";
+@import './shared';
 
 $btnFilter-edgeRadius: 6px;
 $btnFilter-borderStyle: 1px solid #dfe5ec;
@@ -10,7 +10,7 @@ $btnFilter-borderStyle: 1px solid #dfe5ec;
   padding: 0;
   border: none;
 
-  input[type="radio"] {
+  input[type='radio'] {
     position: absolute;
     width: 1px;
     height: 1px;

@@ -1,6 +1,6 @@
 let ticketCounter = 1;
 
-const updateSearchID = () =>
+export const updateSearchID = () =>
   fetch('https://aviasales-test-api.kata.academy/search')
     .then((result) => result.json())
     .then((result) => {
@@ -20,25 +20,7 @@ const getSearchID = () =>
     resolve(searchID);
   });
 
-export const loadNextPage = (callback) => {
-  getSearchID()
-    .then((searchID) => fetch(`https://aviasales-test-api.kata.academy/tickets?searchId=${searchID}`))
-    .then((response) => {
-      if (response.status == 500) {
-        loadNextPage(callback);
-        return;
-      } else if (!response.ok) return { tickets: [], finished: true };
-      return response.json();
-    })
-    .then((data) => {
-      if (!data) return;
-      const tickets = data.tickets.map((ticket) => ({ ...ticket, id: ticketCounter++ }));
-      callback({ tickets, finished: data.stop });
-      if (!data.stop) loadNextPage(callback);
-    });
-};
-
-export const getTickets = (callback) => {
+export const fetchTickets = (callback) => {
   getSearchID()
     .then((searchID) => fetch(`https://aviasales-test-api.kata.academy/tickets?searchId=${searchID}`))
     .then((result) => {
@@ -50,17 +32,13 @@ export const getTickets = (callback) => {
       return result.json();
     })
     .then(
-      (result) => {
-        if (result.stop) {
-          updateSearchID().then(() => getTickets(callback));
-          return;
-        }
-        const tickets = result.tickets.map((ticket) => ({ ...ticket, id: ticketCounter++ }));
-        callback({ tickets, shouldLoadNextPage: !result.stop });
+      (data) => {
+        const tickets = data.tickets.map((ticket) => ({ ...ticket, id: ticketCounter++ }));
+        callback({ tickets, finished: data.stop });
       },
       (error) => {
         if (error.code == 404) {
-          updateSearchID().then(() => getTickets(callback));
+          updateSearchID().then(() => fetchTickets(callback));
         } else if (error.code == 500) {
           callback({ error });
           return;
